@@ -58,4 +58,16 @@ public class Ticket {
     public void setOutTime(Date outTime) {
         this.outTime = outTime;
     }
+
+    /** create a method to apply 5% discount
+     * and round the price after discount to avoid
+     * unwanted values.
+     */
+
+    public void discount() {
+        price -= price* 0.05;
+        price = Math.round(price * 100) /100.0;
+
+        System.out.println("Welcome back!\nAs a recurring user of our parking lot,\nyou'll benefit from a 5% discount.");
+    }
 }
