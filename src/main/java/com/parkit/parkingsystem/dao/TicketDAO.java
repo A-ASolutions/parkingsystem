@@ -8,10 +8,7 @@ import com.parkit.parkingsystem.model.Ticket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 
 public class TicketDAO {
 
@@ -69,9 +66,30 @@ public class TicketDAO {
         }
     }
 
+    /**  To apply the discount, we need to count
+     * the frequency of the returning customer.
+     * For that we need a variable called frequencyVehicleNumber.
+     * The execute the query to count the frequency.
+     *
+     * @param ticket
+     * @return
+     */
+
     public boolean updateTicket(Ticket ticket) {
         Connection con = null;
+        int frequencyVehicleNumber = 0;
         try {
+            con = dataBaseConfig.getConnection();
+
+            PreparedStatement applyDiscount = con.prepareStatement(DBConstants.RETURNING_CUSTOMER);
+            applyDiscount.setString(1, ticket.getVehicleRegNumber());
+            ResultSet resultSet = applyDiscount.executeQuery();
+            while (resultSet.next()) {
+                frequencyVehicleNumber = resultSet.getInt(1);
+                if (frequencyVehicleNumber != 0)
+                    ticket.discount();
+                }
+
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
             ps.setDouble(1, ticket.getPrice());
